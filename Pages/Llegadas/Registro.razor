@@ -1,0 +1,124 @@
+@page "/llegadas/new"
+@using Microsoft.Extensions.Logging
+@inject ILogger<Vuelta> Logger    
+@inject IJSRuntime JS
+@inject NavigationManager NavManager
+
+<h3>Nueva Llegada</h3>
+
+<EditForm Model="@vuelta" OnSubmit="@Guardar">
+
+        <div>
+        <label for="Fecha">Fecha</label>
+        <InputDate @bind-Value="vuelta.Fecha"/>
+    </div>
+    <div>
+        <label for="Nombre">RutaRecorrida</label>
+        <textarea class="form-control" id="Nombre" @bind="vuelta.RutaRecorrida"></textarea>
+    </div>
+    <div>
+        <label for="Nombre">Capitan</label>
+        <textarea class="form-control" id="Nombre" @bind="vuelta.Capitan" ></textarea>
+    </div>
+    <div>
+        <label for="Nombre">NumeroDeAutobus</label>
+        <InputText class="form-control" id="Nombre" @bind-Value="vuelta.NumeroDeAutobus" />
+    </div>
+    <h4>Detalle</h4>
+    <table class="table table-bodered table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Sexo</th>
+                <th>Documento</th>
+                <th>Latitud</th>
+                <th>Longitud</th>
+                <th>Dinero</th>
+                <td>
+                    <button type="button" @onclick="nuevoPass"class='btn btn-success btn-sm'><i class='fa fa-plus'></i></button>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Detenido in vuelta.Detenidos)
+            {
+                <tr>
+                    <td>
+                        <InputText class="form-control" @bind-Value="Detenido.Nombre"/>
+                    </td>
+                    <td>
+                        <InputText class="form-control" @bind-Value="Detenido.Apellido"/>
+                    </td>
+                    <td>
+                        <InputSelect class="form-control" @bind-Value="Detenido.Sexo">
+                            <option value="M">M</option>
+                            <option value="F">F</option>
+                        </InputSelect>
+                    </td>
+                    <td>
+                        <InputText class="form-control" @bind-Value="Detenido.Documento"/>
+                    </td>
+                    <td>
+                        <InputText class="form-control" @bind-Value="Detenido.Latitud"/>
+                    </td>
+                    <td>
+                        <InputText class="form-control" @bind-Value="Detenido.Longitud"/>
+                    </td>                   
+                    <td>
+                        <InputNumber class="form-control" @bind-Value="Detenido.Dinero"/>
+                    </td>
+                    <td>
+                        <button type="button" @onclick="() => quitarPass(Detenido)" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
+
+                    </td>
+                </tr>
+            }
+
+
+
+        </tbody>
+    </table>
+
+
+
+    <button type="submit">Submit</button>
+</EditForm>
+
+
+
+
+@code{
+    Vuelta vuelta = new Vuelta();
+
+
+    void nuevoPass(){
+        var nuevo = new Detenido();
+        vuelta.Detenidos.Add(nuevo);
+    }
+    void quitarPass(Detenido detenido)
+    {
+        vuelta.Detenidos.Remove(detenido);
+    }
+    public void Guardar(){
+        
+        if(vuelta.Detenidos.Count == 0){
+            JS.InvokeVoidAsync("alert", "No hay pasajeros");
+            return;
+        }
+
+        var datos = Newtonsoft.Json.JsonConvert.SerializeObject(vuelta);
+
+        if(!System.IO.Directory.Exists("data_json")){
+            System.IO.Directory.CreateDirectory("data_json");
+        }
+
+        var codigo = vuelta.id;
+
+        System.IO.File.WriteAllText($"data_json/{codigo}.json", datos);
+        JS.InvokeVoidAsync("alert", "vuelta guardada");
+
+        Console.WriteLine("Guardando vuelta");
+        NavManager.NavigateTo("/llegadas");
+    }
+}

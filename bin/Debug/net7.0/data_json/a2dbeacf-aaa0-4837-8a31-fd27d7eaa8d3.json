@@ -1,0 +1,18 @@
+{
+    "id": "a2dbeacf-aaa0-4837-8a31-fd27d7eaa8d3",
+    "Fecha": "2023-02-19T16:00:27.4589121-04:00",
+    "RutaRecorrida": "asd",
+    "Capitan": "asdf",
+    "NumeroDeAutobus": "asdfqww",
+    "Detenidos": [
+        {
+            "Nombre": "asdas",
+            "Apellido": "asdaxd",
+            "Sexo": "M",
+            "Documento": "asdasd",
+            "Latitud": "18",
+            "Longitud": "-69",
+            "Dinero": 200.0
+        }
+    ]
+}

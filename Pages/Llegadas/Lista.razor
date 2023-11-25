@@ -1,0 +1,64 @@
+@page "/llegadas"
+
+<h3>Llegadas</h3>
+
+<div class="text-right">
+    <NavLink class="btn btn-primary" href="/llegadas/new">
+    <i class="fa fa-person"></i>
+        Nuevo Inmigrante
+    </NavLink>
+</div>
+
+<table class= "table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Ruta</th>
+            <th>Capitan</th>
+            <th># Pasajeros</th>
+            <th>Monto</th>
+        </tr>
+    </thead>
+
+    <thead>
+        @foreach (var vuelta in vueltaList)
+        {
+            var monto = vuelta.Detenidos.Sum(x => x.Dinero);
+
+            <tr>
+                <td>@vuelta.Fecha</td>
+                <td>@vuelta.RutaRecorrida</td>
+                <td>@vuelta.Capitan</td>
+                <td>@vuelta.Detenidos.Count</td>
+                <td>@monto</td>
+                
+            </tr>
+        }
+    </thead>
+</table>
+
+
+
+@code{
+
+    List<Vuelta> vueltaList = new List<Vuelta>();
+
+        protected override async Task OnInitializedAsync(){
+            if(Directory.Exists("data_json")){
+                var files = Directory.GetFiles("data_json");
+
+                foreach(var file in files){
+                    var json = await File.ReadAllTextAsync(file);
+                    try{
+                        var vuelta = Newtonsoft.Json.JsonConvert.DeserializeObject<Vuelta>(json);
+                        if(vuelta != null){
+                            vueltaList.Add(vuelta);
+                        }
+                        
+                    }catch(Exception ex){
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }
+        }
+}

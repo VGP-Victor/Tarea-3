@@ -1,0 +1,48 @@
+@page "/mapa/{text}"
+@inject IJSRuntime JS
+@inject NavigationManager NavManager
+
+<h3>Mapa de la vuelta @vuelta.RutaRecorrida del bus @vuelta.NumeroDeAutobus</h3>
+<div id="map" style="width: 100%; height: 700px;"></div>
+
+@code{
+
+    [Parameter]
+    public string? Text {get; set;}
+
+    Vuelta vuelta = new Vuelta();
+
+    void ShowMap(string json_data)
+    {
+       JS.InvokeVoidAsync("showAsgMap", json_data);
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Text != null)
+        {
+            if(File.Exists($"data_json/{Text}.json"))
+            {
+                string json = await File.ReadAllTextAsync($"data_json/{Text}.json");
+                try
+                {
+                     vuelta = Newtonsoft.Json.JsonConvert.DeserializeObject<Vuelta>(json)?? new Vuelta();
+                    
+                }catch
+                {
+                    Console.WriteLine("Error al leer el archivo");
+                }
+            }
+        }
+
+        if(vuelta.Detenidos.Count < 1){
+            //await JS.InvokeVoidAsync("alert", "Nohay daros de la vuelta");
+            NavManager.NavigateTo("/mapa");
+
+        }
+        var datos = Newtonsoft.Json.JsonConvert.SerializeObject(vuelta.Detenidos);
+        ShowMap(datos);
+    }
+    
+}
